@@ -1,4 +1,5 @@
 import argparse
+import gzip
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
@@ -38,7 +39,13 @@ def convert_warc_gz_to_wet(input_path: Path, output_path: Path) -> tuple[int, in
     written = 0
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    with input_path.open("rb") as fin, output_path.open("w", encoding="utf-8") as fout:
+    open_output = (
+        (lambda p: gzip.open(p, "wt", encoding="utf-8", newline="\n"))
+        if output_path.suffix == ".gz"
+        else (lambda p: p.open("w", encoding="utf-8", newline="\n"))
+    )
+
+    with input_path.open("rb") as fin, open_output(output_path) as fout:
         for record in ArchiveIterator(fin, parse_http=True):
             if record.record_type != WarcRecordType.response:
                 continue
@@ -66,10 +73,10 @@ def convert_warc_gz_to_wet(input_path: Path, output_path: Path) -> tuple[int, in
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Read a .warc.gz file and write a .wet file using todo0.foo()."
+        description="Read a .warc.gz file and write a .wet or .wet.gz file using todo0.foo()."
     )
     parser.add_argument("input_warc_gz", type=Path, help="Path to input .warc.gz")
-    parser.add_argument("output_wet", type=Path, help="Path to output .wet")
+    parser.add_argument("output_wet", type=Path, help="Path to output .wet or .wet.gz")
     args = parser.parse_args()
 
     total, written = convert_warc_gz_to_wet(args.input_warc_gz, args.output_wet)
