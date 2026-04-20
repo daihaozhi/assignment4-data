@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 from typing import Any
-from todo0 import foo
+from tests.todo0 import foo
 
 
 def run_extract_text_from_html_bytes(html_bytes: bytes) -> str | None:
