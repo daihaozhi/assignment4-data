@@ -3,14 +3,14 @@ from __future__ import annotations
 import os
 from typing import Any
 from tests.todo0 import foo
-
+from tests.todo1 import run_identify_language
 
 def run_extract_text_from_html_bytes(html_bytes: bytes) -> str | None:
     return foo(html_bytes)
 
 
 def run_identify_language(text: str) -> tuple[Any, float]:
-    raise NotImplementedError
+    return run_identify_language(text)
 
 
 def run_mask_emails(text: str) -> tuple[str, int]:
